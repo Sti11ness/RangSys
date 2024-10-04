@@ -1,0 +1,26 @@
+rule all:
+    input:
+        "models/trained_model.pkl"
+
+rule preprocess:
+    input:
+        "data/train_actions.pq"
+    output:
+        "data/preprocessed_data.pq"
+    shell:
+        "python scripts/preprocess.py --input_path {input} --output_path {output}"
+
+rule train:
+    input:
+        "data/preprocessed_data.pq"
+    output:
+        "models/trained_model.pkl"
+    shell:
+        "python scripts/train.py --input_path {input} --model_output_path {output}"
+
+rule evaluate:
+    input:
+        model="models/trained_model.pkl",
+        data="data/preprocessed_data.pq"
+    shell:
+        "python scripts/evaluate.py --input_path {input.data} --model_path {input.model}"
